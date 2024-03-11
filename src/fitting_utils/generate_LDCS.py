@@ -54,10 +54,10 @@ if args.microns: # have to change to Angstroms
 
 # Check that no wavelengths are beyond LDTk's upper limit. If so (e.g. for MIRI), we will have to use a different ExoTIC-LD to estimate the LDCs
 if not args.use_exotic:
-	if white_light_fit:
-	    if 1e-4*(wavelength_centres + wvl_bin_full_width/2) > 5.5:
-	        raise ValueError("Desired maximum wavelength is beyond LDTk's limit of 5.5um. Try using https://exotic-ld.readthedocs.io/en/latest/views/installation.html instead")
-	else:
+    if white_light_fit:
+        if 1e-4*(wavelength_centres + wvl_bin_full_width/2) > 5.5:
+            raise ValueError("Desired maximum wavelength is beyond LDTk's limit of 5.5um. Try using https://exotic-ld.readthedocs.io/en/latest/views/installation.html instead")
+    else:
 	    if 1e-4*(wavelength_centres[-1]+wvl_bin_full_width[-1]/2) > 5.5:
 	        raise ValueError("Desired maximum wavelength is beyond LDTk's limit of 5.5um. Try using https://exotic-ld.readthedocs.io/en/latest/views/installation.html instead")
 
@@ -343,9 +343,9 @@ else:
     smoothed_tab.write('# Teff = %d +/- %.2f K ; log(g) = %.2f +/- %.2f ; FeH = %.2f +/- %.2f ; u error inflation factor = %.1f \n'%(Teff,Teff_err,logg_star,logg_star_err,FeH,FeH_err,error_inflation))
     smoothed_tab.write('# %s law used \n'%(args.ld_law))
     if args.use_exotic:
-    	smoothed_tab.write("# Exo-TIC-LD used with a %s model for instrument %s \n"%(args.ld_model_dimensionality,args.instrument))
+        smoothed_tab.write("# Exo-TIC-LD used with a %s model for instrument %s \n"%(args.ld_model_dimensionality,args.instrument))
     else:
-    	smoothed_tab.write("# LDTk used")
+        smoothed_tab.write("# LDTk used")
     smoothed_tab.write("# Quadratic polynomial was used to smooth the limb darkening coefficients \n")
     smoothed_tab.write("# %d wavelength bins \n"%len(wavelength_centres))
     smoothed_tab.write('# Wavelength | Width | u1 | u1 error | u2 | u2 error | u3 | u3 error | u4 | u4 error |\n')

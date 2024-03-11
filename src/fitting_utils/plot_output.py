@@ -9,8 +9,8 @@ import os
 import matplotlib.pyplot as plt
 from matplotlib.ticker import ScalarFormatter
 from global_utils import parseInput
-from Tiberius.src.fitting_utils import plotting_utils as pu
-from Tiberius.src.fitting_utils import mcmc_utils as mc
+from fitting_utils import plotting_utils as pu
+from fitting_utils import mcmc_utils as mc
 
 ### Define command line arguments with help
 
@@ -60,7 +60,7 @@ directory = os.getcwd()
 if not args.white_light_curve and not args.photon_noise and args.start_bin is None and args.end_bin is None:
     ### Plot the transmission spectrum & the Rp/Rs error divided by photon noise
     trans_fig = pu.recover_transmission_spectrum(directory,save_fig=args.save_fig,plot_fig=True,bin_mask=args.mask_bins,print_RpErr_over_RMS=True,save_to_tab=args.save_table,iib=args.iib)
-    if args.close_plots:
+    if args.close_plots: 
         plt.close()
     else:
         trans_fig.show()
