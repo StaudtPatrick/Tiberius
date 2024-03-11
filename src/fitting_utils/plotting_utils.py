@@ -259,6 +259,7 @@ def plot_models(model_list,time,flux_array,error_array,wvl_centre,rebin_data=Non
     for i in range(nbins):
 
         # figure out whether we're using a common time array
+        time=np.array(time,dtype=object)
         if len(np.shape(time)) != 1 or isinstance(time,list) or time.shape[0] > 1:
             t = time[i]
         else:
