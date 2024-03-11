@@ -104,9 +104,7 @@ if input_dict['common_noise_model'] is not None:
         plt.ylabel('Normalised flux')
         plt.title('Common mode correction')
         plt.legend(loc='upper left')
-        plt.show(block=False)
-        plt.pause(5)
-        plt.close()
+        plt.savefig('Common_noise_corr%i.png'%wb)
 
     y = flux
 
@@ -506,6 +504,12 @@ if step_func_used:
 if not poly_used and not exp_ramp_used and not step_func_used:
     # if we're not using a polynomial, we're including a normalization factor to multiply the transit light curve by to account for imperfect normalisation of out-of-transit data
     d['f'] = tmgp.Param(1)
+
+
+clipped_flux = flux
+clipped_flux_error = flux_error
+clipped_time = time
+clipped_model_input = systematics_model_inputs
 
 
 ### Optionally clip outliers using running median
