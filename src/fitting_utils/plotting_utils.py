@@ -588,23 +588,38 @@ def rebin(xbins,x,y,e=None,weighted=False,errors_from_rms=False):
                 raise Exception('Cannot compute weighted mean without Falseerrors')
             bin_e_vals = e[digitized == i]
             weights = 1.0/bin_e_vals**2
-            xbin.append( np.sum(weights*bin_x_vals) / np.sum(weights) )
-            ybin.append( np.sum(weights*bin_y_vals) / np.sum(weights) )
+            xbin_masked = np.ma.masked_array(bin_x_vals, np.isnan(bin_x_vals))
+            ybin_masked = np.ma.masked_array(bin_y_vals, np.isnan(bin_y_vals))
+            xbin.append(np.ma.average(xbin_masked, weights=weights))
+            ybin.append(np.ma.average(ybin_masked, weights=weights))
+            #xbin.append( np.sum(weights*bin_x_vals) / np.sum(weights) )
+            #ybin.append( np.sum(weights*bin_y_vals) / np.sum(weights) )
             if errors_from_rms:
-                ebin.append(np.std(bin_y_vals))
+                ebin.append(np.nanstd(bin_y_vals))
             else:
-                ebin.append( np.sqrt(1.0/np.sum(weights) ) )
+                ebin.append(np.sqrt(1.0/np.nansum(weights)))
         else:
-            xbin.append(bin_x_vals.mean())
-            ybin.append(bin_y_vals.mean())
-            #xbin.append(stats.nanmean(bin_x_vals))
-            #ybin.append(stats.nanmean(bin_y_vals))
+            if len(bin_x_vals) == 0:
+                xbin.append(np.nan)
+            else:
+                #xbin.append(bin_x_vals.mean())
+                xbin.append(np.nanmean(bin_x_vals))
+            if len(bin_y_vals) == 0:
+                ybin.append(np.nan)
+            else:
+                #ybin.append(bin_y_vals.mean())
+                ybin.append(np.nanmean(bin_y_vals))
+
             if errors_from_rms:
-                ebin.append(np.std(bin_y_vals))
+                ebin.append(np.nanstd(bin_y_vals))
             else:
                 try:
                     bin_e_vals = e[digitized == i]
-                    ebin.append(np.sqrt(np.sum(bin_e_vals**2)) / len(bin_e_vals))
+                    if len(bin_e_vals)==0:
+                        ebin.append(np.nan)
+                    else:
+                        len_bin_e_vals = [x for x in bin_e_vals if not np.isnan(x)]
+                        ebin.append(np.sqrt(np.nansum(bin_e_vals**2)) / len_bin_e_vals)
                 except:
                     raise Exception('Must either supply errors, or calculate from rms')
     xbin = np.array(xbin)
