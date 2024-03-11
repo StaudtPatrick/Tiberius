@@ -1,7 +1,7 @@
 #### Author of this code: James Kirk
 #### Contact: jameskirk@live.co.uk
 
-from Tiberius.src.fitting_utils import plotting_utils as pu
+from fitting_utils import plotting_utils as pu
 import argparse
 import numpy as np
 import matplotlib.pyplot as plt
