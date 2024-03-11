@@ -271,7 +271,7 @@ def plot_models(model_list,time,flux_array,error_array,wvl_centre,rebin_data=Non
         # calculate transit model
         model_y = model_list[i].calc(t)
 
-        if gp:
+        if model_list[0].GP_used:
             mu,std = model_list[i].calc_gp_component(t,flux_array[i],error_array[i])
             residuals = flux_array[i] - model_y - mu
             RMS = model_list[i].rms(t,flux_array[i],error_array[i])

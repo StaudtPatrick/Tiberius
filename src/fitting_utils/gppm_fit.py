@@ -99,7 +99,7 @@ if input_dict['common_noise_model'] is not None:
     if show_plots:
         plt.figure()
         plt.errorbar(time,flux,yerr=flux_error,fmt='o',alpha=0.5,ecolor='r',color='r',capsize=2,label='Before correction')
-        plt.errorbar(time,flux/common_noise_model,yerr=flux_error,fmt='o',ecolor='k',color='k',capsize=2,alpha=0.5,label='After correction')
+        plt.errorbar(time,flux-common_noise_model,yerr=flux_error,fmt='o',ecolor='k',color='k',capsize=2,alpha=0.5,label='After correction')
         plt.xlabel('Time (MJD)')
         plt.ylabel('Normalised flux')
         plt.title('Common mode correction')
@@ -109,8 +109,8 @@ if input_dict['common_noise_model'] is not None:
     y = flux
 
     # Divide by the common noise model
-    flux = flux/common_noise_model
-    flux_error = (flux_error/y)*flux
+    flux = flux-common_noise_model
+    #flux_error = (flux_error/y)*flux
 
 
 ### Red noise polynomial model parameters
