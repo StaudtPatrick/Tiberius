@@ -9,7 +9,7 @@ import pickle
 import glob
 from matplotlib.ticker import AutoMinorLocator
 from global_utils import parseInput
-from Tiberius.src.fitting_utils import mcmc_utils as mc
+from fitting_utils import mcmc_utils as mc
 from scipy.stats import chi2 as c2
 from scipy.special import erfinv
 
@@ -636,7 +636,7 @@ def recover_transmission_spectrum(directory,save_fig=False,plot_fig=True,bin_mas
     except:
         best_dict = parseInput(directory+'/best_fit_parameters.txt')
 
-    input_dict = parseInput(directory+'/fitting_input.txt')
+    input_dict = parseInput(directory+'/fitting_input.txt') 
 
     # load in data
     x,y,e,e_r,m,m_in,w,we,completed_bins,nbins = load_completed_bins(directory,bin_mask)
@@ -725,7 +725,7 @@ def recover_transmission_spectrum(directory,save_fig=False,plot_fig=True,bin_mas
         if not bool(int(input_dict['fix_u2'])):
             u2_curr,u2_up_curr,u2_low_curr = mc.parseParam(best_dict['u2_%d'%(wb)])
             u2.append(u2_curr)
-            u2_up.append(u2_up_curr)
+            u2_up.append(u2_up_curr) 
             u2_low.append(u2_low_curr)
 
         if input_dict["ld_law"] == "nonlinear":
@@ -1426,8 +1426,8 @@ def bin_trans_spec(bin_edges,x,y,e1,e2=None):
         if e2 is not None:
             mean_y,mean_e = weighted_mean_uneven_errors(y[digitized==i],e1[digitized==i],e2[digitized==i])
         else:
-	        mean_y,weights = np.average(y[digitized==i],weights=1/e1[digitized==i]**2,returned=True)
-	        mean_e = np.sqrt(1/weights)
+            mean_y,weights = np.average(y[digitized==i],weights=1/e1[digitized==i]**2,returned=True)
+            mean_e = np.sqrt(1/weights)
 
         binned_x.append(x[digitized==i].mean())
         binned_xe.append(x[digitized==i].max()-x[digitized==i].min())
