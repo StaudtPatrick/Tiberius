@@ -669,9 +669,9 @@ if optimise_model or clip_outliers and not median_clip:
 
     if show_plots:
         if median_clip:
-            fig = pu.plot_single_model(fitted_clip_model,clipped_time,clipped_flux,clipped_flux_error,save_fig=False,plot_residual_std=sigma_clip)
+            fig = pu.plot_single_model(fitted_clip_model,clipped_time,clipped_flux,clipped_flux_error,save_fig=True,plot_residual_std=sigma_clip)
         else:
-            fig = pu.plot_single_model(fitted_clip_model,time,flux,flux_error,save_fig=False,plot_residual_std=sigma_clip)
+            fig = pu.plot_single_model(fitted_clip_model,time,flux,flux_error,save_fig=True,plot_residual_std=sigma_clip)
 
     if optimise_model:
 
@@ -728,7 +728,7 @@ starting_model = tmgp.TransitModelGPPM(d,clipped_model_input,kernel_classes,clip
 
 if not optimise_model and show_plots:
     print("plotting starting model")
-    fig = pu.plot_single_model(starting_model,clipped_time,clipped_flux,clipped_flux_error,save_fig=False)
+    fig = pu.plot_single_model(starting_model,clipped_time,clipped_flux,clipped_flux_error,save_fig=True)
 
 
 ### Optionally fit all combinations of polynomials with a Nelder-Mead to determine the best orders and inputs to use
@@ -760,7 +760,7 @@ if args.determine_best_polynomials and GP_used:
 if show_plots and GP_used: # if we're not using a GP, we've already plotted the starting model from the optimise output above
     print('\nPlotting starting model....')
     ### Plot starting model
-    fig = pu.plot_single_model(starting_model,clipped_time,clipped_flux,clipped_flux_error,rebin_data=rebin_data,save_fig=False)
+    fig = pu.plot_single_model(starting_model,clipped_time,clipped_flux,clipped_flux_error,rebin_data=rebin_data,save_fig=True)
 
 ### optimise model parameters prior to MCMC?
 if optimise_model and GP_used:
@@ -769,7 +769,7 @@ if optimise_model and GP_used:
 
     print('\nPlotting optimised GP model....')
     if show_plots:
-        fig = pu.plot_single_model(starting_model,clipped_time,clipped_flux,clipped_flux_error,rebin_data=rebin_data,save_fig=False)
+        fig = pu.plot_single_model(starting_model,clipped_time,clipped_flux,clipped_flux_error,rebin_data=rebin_data,save_fig=True)
 
     if bool(int(input_dict["reset_kernel_priors"])):
         print("\nUpdating kernel priors with optimised values...\n")
@@ -841,7 +841,7 @@ if nstep != 0:
             print("\nRescaling photometric uncertainties to give rChi2 = 1")
             clipped_flux_error = clipped_flux_error*np.sqrt(burn_model.reducedChisq(clipped_time,clipped_flux,clipped_flux_error))
             if show_plots:
-                fig = pu.plot_single_model(burn_model,clipped_time,clipped_flux,clipped_flux_error,rebin_data=rebin_data,save_fig=False)
+                fig = pu.plot_single_model(burn_model,clipped_time,clipped_flux,clipped_flux_error,rebin_data=rebin_data,save_fig=True)
             rchi2_rescaled = burn_model.reducedChisq(clipped_time,clipped_flux,clipped_flux_error)
             print("reduced Chi2 following error rescaling = %.2f"%(rchi2_rescaled))
             pickle.dump(clipped_flux_error,open('rescaled_errors_wb%s.pickle'%(str(wb+1).zfill(4)),'wb'))
@@ -862,7 +862,7 @@ else: # we're not running an MCMC at all here, we're just using a Levenberg-Marq
     print("\nRescaling photometric uncertainties to give rChi2 = 1")
     clipped_flux_error = clipped_flux_error*np.sqrt(burn_model.reducedChisq(clipped_time,clipped_flux,clipped_flux_error))
     if show_plots:
-        fig = pu.plot_single_model(burn_model,clipped_time,clipped_flux,clipped_flux_error,rebin_data=rebin_data,save_fig=False)
+        fig = pu.plot_single_model(burn_model,clipped_time,clipped_flux,clipped_flux_error,rebin_data=rebin_data,save_fig=True)
     rchi2_rescaled = burn_model.reducedChisq(clipped_time,clipped_flux,clipped_flux_error)
     print("reduced Chi2 following error rescaling = %.2f"%(rchi2_rescaled))
     pickle.dump(clipped_flux_error,open('rescaled_errors_wb%s.pickle'%(str(wb+1).zfill(4)),'wb'))
