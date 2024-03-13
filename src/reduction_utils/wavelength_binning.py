@@ -205,7 +205,7 @@ def plot_all_bins(mjd,flux,error,rebin_data=None):
     if rebin_data is not None:
         xbins = np.linspace(mjd_off[0],mjd_off[-1],rebin_data)
 
-    plt.figure()
+    plt.figure(figsize=(11,7))
     for i in range(nbins):
 
         if rebin_data is not None:
@@ -217,8 +217,8 @@ def plot_all_bins(mjd,flux,error,rebin_data=None):
 
         plt.errorbar(x,y-offsets[i],yerr=e,ecolor='k',fmt='o',color='r',ms=1)
 
-    plt.ylabel('Normalised flux')
-    plt.xlabel('MJD + %d'%int(mjd[0]))
+    plt.ylabel('Normalised flux', size=12)
+    plt.xlabel('MJD + %d'%int(mjd[0]), size=12)
     plt.show()
     return
 
@@ -645,7 +645,7 @@ def plot_spectra(star1,star2,wvl_solution,wvl_solution_2=None,bin_edges=None,bin
     """
 
     if ratio:
-        plt.figure()
+        plt.figure(figsize=(20,10))
     else:
         plt.figure(figsize=(7,4))
 
@@ -682,7 +682,7 @@ def plot_spectra(star1,star2,wvl_solution,wvl_solution_2=None,bin_edges=None,bin
             plt.axvline(potassium_d2,color='g')
 
         plt.xticks(visible=False)
-        plt.ylabel('Flux ratio')
+        plt.ylabel('Flux ratio', size=14)
 
         if xmin is not None and xmax is not None:
             plt.xlim(xmin,xmax)
@@ -715,8 +715,8 @@ def plot_spectra(star1,star2,wvl_solution,wvl_solution_2=None,bin_edges=None,bin
         if star2 is not None:
             plt.plot(wvl_solution_2,wc.normalise(star2,maximum=True),'r')
 
-    plt.xlabel('Wavelength ($\AA$)')
-    plt.ylabel('Normalised flux')
+    plt.xlabel('Wavelength ($\AA$)', size=14)
+    plt.ylabel('Normalised flux', size=14)
     plt.ylim(0,1.1)
     if xmin is not None and xmax is not None:
         plt.xlim(xmin,xmax)
@@ -1387,55 +1387,55 @@ def uniform_tophat_mean(newx,x, y, dy=None,nan=False):
 
 
 def bin_wave_to_R(w, R):
-	"""Creates new wavelength axis at specified resolution
-
-	Parameters
-	----------
-	w : list of float or numpy array of float
-	    Wavelength axis to be rebinned
-	R : float or int
-	    Resolution to bin axis to
-
-	Returns
-	-------
-	list of float
-	    New wavelength axis at specified resolution
-
-	Examples
-	--------
-
-	>>> newwave = bin_wave_to_R(np.linspace(1,2,1000), 10)
-	>>> print((len(newwave)))
-	11
-	"""
-	wave = []
-	tracker = min(w)
-	i = 1
-	ind= 0
-	firsttime = True
-	while(tracker<max(w)):
-	    if i <len(w)-1:
-	        dlambda = w[i]-w[ind]
-	        newR = w[i]/dlambda
-	        if (newR < R) & (firsttime):
-	            tracker = w[ind]
-	            wave += [tracker]
-	            ind += 1
-	            i += 1
-	            firsttime = True
-	        elif newR < R:
-	            tracker = w[ind]+dlambda/2.0
-	            wave +=[tracker]
-	            ind = (np.abs(w-tracker)).argmin()
-	            i = ind+1
-	            firsttime = True
-	        else:
-	            firsttime = False
-	            i+=1
-	    else:
-	        tracker = max(w)
-	        wave += [tracker]
-	return wave
+    """Creates new wavelength axis at specified resolution
+    
+    Parameters
+    ----------
+    w : list of float or numpy array of float
+        Wavelength axis to be rebinned
+    R : float or int
+        Resolution to bin axis to
+    
+    Returns
+    -------
+    list of float
+        New wavelength axis at specified resolution
+        
+    Examples
+    --------
+    
+    >>> newwave = bin_wave_to_R(np.linspace(1,2,1000), 10)
+    >>> print((len(newwave)))
+    11
+    """
+    wave = []
+    tracker = min(w)
+    i = 1
+    ind= 0
+    firsttime = True
+    while(tracker<max(w)):
+        if i <len(w)-1:
+            dlambda = w[i]-w[ind]
+            newR = w[i]/dlambda
+            if (newR < R) & (firsttime):
+                tracker = w[ind]
+                wave += [tracker]
+                ind += 1
+                i += 1
+                firsttime = True
+            elif newR < R:
+                tracker = w[ind]+dlambda/2.0
+                wave +=[tracker]
+                ind = (np.abs(w-tracker)).argmin()
+                i = ind+1
+                firsttime = True
+            else:
+                firsttime = False
+                i+=1
+        else:
+            tracker = max(w)
+            wave += [tracker]
+    return wave
 
 
 def generate_wvls_at_R(starting_wvl,stopping_wvl,R):
