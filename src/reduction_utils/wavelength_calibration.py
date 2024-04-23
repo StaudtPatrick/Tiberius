@@ -506,7 +506,7 @@ def normalise(data,maximum=False):
 
     return data/np.nanmedian(data)
 
-def plot_and_fit_regions(stellar_spectrum,wvl_input,guess_dict,verbose=False,work_in_wavelength=False,absorption=True):
+def plot_and_fit_regions(stellar_spectrum,wvl_input,guess_dict,variables,verbose=False,work_in_wavelength=False,absorption=True):
     """
     The function that takes a 1D spectrum, wavelength array and locations of absorption lines, and fits Gaussians to each absorption line. It also returns the position of the minimum flux for each line.
 
@@ -533,7 +533,7 @@ def plot_and_fit_regions(stellar_spectrum,wvl_input,guess_dict,verbose=False,wor
     star_centres_argmin = []
 
     plt.close('all')
-    for i,l in enumerate(spectral_lines):
+    for i, (l, (key, value)) in enumerate(zip(spectral_lines, variables.items())):
 
         chunk = (wvl_input > guess_dict[l][0]) & (wvl_input < guess_dict[l][-1])
 
@@ -580,7 +580,8 @@ def plot_and_fit_regions(stellar_spectrum,wvl_input,guess_dict,verbose=False,wor
                 plt.xlabel('Pixel number')
             plt.ylabel('Normalised flux')
             plt.legend(loc='lower right')
-            plt.title('Actual line = %.3f'%l)
+            plt.title(key + ' with actual line at %.3f'%l)
+            #plt.title('Actual line = %.3f'%l)
             plt.show()
 
             fwhm = 2*np.sqrt(2*np.log(2))*popt[2]
@@ -685,7 +686,7 @@ def calc_wvl_solution(pixel_values,line_wvls,poly_order,stellar_spectrum,verbose
             plt.figure()
             plt.subplot(211)
             plt.title('Fit after clipping outliers')
-            plt.plot(pixel_values[keep_index],line_wvls[keep_index],'ro')
+            plt.plot(np.array(pixel_values)[keep_index],np.array(line_wvls)[keep_index],'ro')
             plt.plot(range(nrows),poly(range(nrows)),'b')
             plt.xticks(visible=False)
             plt.ylabel('Wavelength ($\AA$)')
@@ -694,7 +695,7 @@ def calc_wvl_solution(pixel_values,line_wvls,poly_order,stellar_spectrum,verbose
             plt.title('Residuals')
             plt.xlabel('Y pixel')
             plt.ylabel('Wavelength ($\AA$)')
-            plt.plot(pixel_values[keep_index],line_wvls[keep_index]-poly(pixel_values[keep_index]),'ro')
+            plt.plot(np.array(pixel_values)[keep_index],np.array(line_wvls)[keep_index]-poly(np.array(pixel_values)[keep_index]),'ro')
 
 
     if verbose:
