@@ -161,10 +161,11 @@ def plot_cosmic_frames(cosmic_pixels, save_frames=False):
     plt.figure(figsize=(11,7))
     for i,c in enumerate(cosmic_pixels):
         plt.imshow(c,cmap='Greys', interpolation='none',aspect="auto")
-        plt.title("Frame %d"%i)
+        plt.title("Frame %d"%(i+1))
         plt.xlabel("Pixel column")
         plt.ylabel("Pixel row")
         if save_frames:
+            filename = "Frame_%d"%(i+1)
             plt.savefig('locate_cosmics/' + filename + '.png')
         plt.show(block=False)
         plt.pause(1e-6)
@@ -198,11 +199,11 @@ def check_cosmic_frames(cosmic_pixels,frame_cut_off,save_frames=False):
     for i,c in enumerate(cosmic_pixels):
         ncosmics = len(np.where(c==1)[0])
         if ncosmics > frame_cut_off*median_cosmics:
-            print("Integration %d has %.2fX the median number of cosmics, somethings up"%(i,ncosmics/median_cosmics))
+            print("Integration %d has %.2fX the median number of cosmics, somethings up"%(i+1,ncosmics/median_cosmics))
             plt.figure(figsize=(11,7))
             plt.imshow(c,cmap='Greys', interpolation='none',aspect="auto")
             incorrectly_flagged_cosmics.append(i)
-            plt.title("Integration %d"%i)
+            plt.title("Integration %d"%(i+1))
             plt.ylabel("Pixel row")
             plt.xlabel("Pixel column")
             plt.show(block=False)
@@ -303,7 +304,7 @@ def replace_cosmics(cosmic_pixels,medians,science_list,nints,jwst=False):
         f_new = copy.deepcopy(f)
         filename = science_list[i].split("/")[-1]
 
-        print("Cleaning frame %i"%i)
+        print("Cleaning frame %i"%(i+1))
 
         for row in range(nrows):
             f_new[0].data[row][cosmic_pixels[i][row]] = medians[i][row][cosmic_pixels[i][row]]
@@ -325,8 +326,9 @@ if args.rows is not None:
 # loop through all frames and pixels
 cosmic_pixels = np.zeros_like(data)
 median_values = np.zeros_like(data)
+
 for row in range(nrows):
-    print("Calculating medians for row %d of %d"%(row,nrows))
+    print("Calculating medians for row %d of %d"%(row+1,nrows))
     for col in range(ncols):
         bad_frames,medians = locate_bad_frames(data,row,col,cut_off,args.verbose,args.save_frames)
         cosmic_pixels[:,row,col][bad_frames] = 1
