@@ -588,23 +588,37 @@ def rebin(xbins,x,y,e=None,weighted=False,errors_from_rms=False):
                 raise Exception('Cannot compute weighted mean without Falseerrors')
             bin_e_vals = e[digitized == i]
             weights = 1.0/bin_e_vals**2
-            xbin.append( np.sum(weights*bin_x_vals) / np.sum(weights) )
-            ybin.append( np.sum(weights*bin_y_vals) / np.sum(weights) )
+            masked_xbin = np.ma.masked_array(xbin, np.isnan(xbin))
+            masked_ybin = np.ma.masked_array(ybin, np.isnan(ybin))
+            #xbin.append( np.sum(weights*bin_x_vals) / np.sum(weights) )
+            #ybin.append( np.sum(weights*bin_y_vals) / np.sum(weights) )
+            xbin.append(np.ma.average(masked_xbin, weights=weights))
+            ybin.append(np.ma.average(masked_ybin, weights=weights))
             if errors_from_rms:
-                ebin.append(np.std(bin_y_vals))
+                ebin.append(np.nanstd(bin_y_vals))
             else:
-                ebin.append( np.sqrt(1.0/np.sum(weights) ) )
+                ebin.append( np.sqrt(1.0/np.nansum(weights) ) )
         else:
-            xbin.append(bin_x_vals.mean())
-            ybin.append(bin_y_vals.mean())
-            #xbin.append(stats.nanmean(bin_x_vals))
-            #ybin.append(stats.nanmean(bin_y_vals))
+            if len(bin_x_vals) == 0:
+                xbin.append(np.nan)
+            else:
+                #xbin.append(bin_x_vals.mean())
+                xbin.append(np.nanmean(bin_x_vals))
+            if len(bin_y_vals) == 0:
+                ybin.append(np.nan)
+            else:
+                #ybin.append(bin_y_vals.mean())
+                ybin.append(np.nanmean(bin_y_vals))
+
             if errors_from_rms:
-                ebin.append(np.std(bin_y_vals))
+                ebin.append(np.nanstd(bin_y_vals))
             else:
                 try:
                     bin_e_vals = e[digitized == i]
-                    ebin.append(np.sqrt(np.sum(bin_e_vals**2)) / len(bin_e_vals))
+                    if len(bin_e_vals)==0:
+                        ebin.append(np.nan)
+                    else:
+                        ebin.append(np.sqrt(np.nansum(bin_e_vals**2)) / len([x for x in bin_e_vals if not np.isnan(x)])) 
                 except:
                     raise Exception('Must either supply errors, or calculate from rms')
     xbin = np.array(xbin)
@@ -971,6 +985,7 @@ def plot_transmission_spectrum(k_array,k_upper=None,k_lower=None,calibrated_wvl=
 
     if save_fig:
         plt.savefig('transmission_spectrum.pdf',bbox_inches='tight')
+        plt.savefig('transmission_spectrum.png')
         plt.close()
     else:
         plt.show()
