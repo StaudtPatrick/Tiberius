@@ -161,9 +161,9 @@ else:
 
     print('Need to add functionality to plot best fitting models')
 
-heights = [1]*(nsubplots-1)+[2]
+heights = [80]*(nsubplots-2)+2*[300]
 
-fig = plt.figure(figsize=(12,22))
+fig = plt.figure(figsize=(12,30))
 gs = gridspec.GridSpec(nsubplots, 1, height_ratios=heights)
 panel = 0 # Keep running tally of what panel we're in
 lower_x = time[0] - time[0]/100.
