@@ -13,16 +13,16 @@ import time
 import pickle
 import os
 from collections import Counter
-from Tiberius.src.global_utils import parseInput
+from global_utils import parseInput
 try:
     import astroscrappy
 except:
     print("astroscrappy not imported, automatic cosmic ray detection can't be performed with lacosmic")
 import copy
-from cosmic_removal import interp_bad_pixels
-from wavelength_calibration import rebin_spec
+from reduction_utils.cosmic_removal import interp_bad_pixels
+from reduction_utils.wavelength_calibration import rebin_spec
 from astropy import units as u
-from Keck_utils import Keck_order_masking as KO
+from reduction_utils.Keck_utils import Keck_order_masking as KO
 from astropy.time import Time,TimeDelta
 
 
