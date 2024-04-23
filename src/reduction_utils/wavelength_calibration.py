@@ -703,9 +703,10 @@ def calc_wvl_solution(pixel_values,line_wvls,poly_order,stellar_spectrum,verbose
 
     chi2 = np.sum((residuals**2)/model)
     BIC = chi2 + (poly_order+1)*np.log(npoints)
+    RMS = np.sqrt(np.mean(residuals**2))
     print("RMS residuals = %f"%(np.sqrt(np.mean(residuals**2))))
 
-    return wvl_solution, poly, chi2, BIC
+    return wvl_solution, poly, chi2, BIC, RMS
 
 
 def resample_smoothly(reference_pixel_locations,measured_shifts,input_arrays,sigma_clip_outliers=3,median=False,poly_order=3,mf_box_width=None,min_good=0.9,spline_smoothing_factor=None,verbose=False,refit_polynomial=None,reference_wvl_array=None,use_pysynphot=False):
