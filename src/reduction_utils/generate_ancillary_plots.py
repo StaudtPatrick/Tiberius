@@ -85,8 +85,8 @@ try:
 	mjd = pickle.load(open('mjd_time.pickle','rb'))[:am_cut]
 	time = mjd - int(mjd[0])
 except:
-	time = pickle.load(open('time.pickle','rb'))[:am_cut]
-	time = time - int(time[0])
+	mjd = pickle.load(open('obs_time_array.pickle','rb'))[:am_cut]
+	time = mjd - int(mjd[0])
 
 s1 = pickle.load(open('star1_flux.pickle','rb'))[:am_cut]
 s2 = pickle.load(open('star2_flux.pickle','rb'))[:am_cut]
@@ -229,8 +229,8 @@ if y1 is not None:
 
 # Rotation
 ax4 = plt.subplot(gs[panel])
-ax4.plot(mjd-int(mjd[0]),rotation1,'bx')
-ax4.plot(mjd-int(mjd[0]),rotation2,'r+')
+ax4.plot(time,rotation1,'bx')
+ax4.plot(time,rotation2,'r+')
 ax4.set_ylabel('$X_{4600A} - X_{8900A}$\n (pixels)')
 #ax4.set_ylabel('$X(100) - X(-100)$\n (pixels)')
 lower_y4 = ax4.get_ylim()[0] - ax4.get_ylim()[0]/10.
