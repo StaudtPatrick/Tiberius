@@ -665,6 +665,11 @@ def calc_wvl_solution(pixel_values,line_wvls,poly_order,stellar_spectrum,verbose
         keep_index = ((residuals >= -refit_clip*median_absolute_deviation(residuals)) & (residuals <= refit_clip*median_absolute_deviation(residuals)))
         print("%d/%d points kept after clipping"%(len(np.where(keep_index)[0]),len(line_wvls)))
 
+        while len(np.where(keep_index)[0]) < 0.7*len(pixel_values):
+            refit_clip *= 1.5
+            keep_index = ((residuals >= -refit_clip*median_absolute_deviation(residuals)) & (residuals <= refit_clip*median_absolute_deviation(residuals)))
+            print("%d/%d points kept after clipping"%(len(np.where(keep_index)[0]),len(line_wvls)))
+
         if verbose:
             plt.axhline(refit_clip*median_absolute_deviation(residuals),ls='--')
             plt.axhline(refit_clip*-median_absolute_deviation(residuals),ls='--')
