@@ -36,20 +36,31 @@ first_frame = fits.open(file_list[0])
 
 if args.instrument == "EFOSC":
     nrows,ncols = np.shape(first_frame[0].data)
+
+    # Calculate data range
+    data_min = np.nanmin(first_frame[0].data.T)
+    data_max = np.nanmax(first_frame[0].data.T)
+    data_range = data_max - data_min
+
+    # Calculate vmin and vmax as percentages of the data range
+    vmin = data_min + args.vmin * data_range
+    vmax = data_min + args.vmax * data_range
+
 else:
     nrows,ncols = np.shape(first_frame[args.nwindows].data.T)
 
 plt.figure()
-plt.imshow(first_frame[1].data,vmin=args.vmin,vmax=args.vmax)
+plt.imshow(first_frame[0].data, vmin=vmin, vmax=vmax)
+plt.colorbar()
 plt.show()
 
-cont = input("Scaling ok? [vmin = %d, vmax = %d] (Y/n) : "%(args.vmin,args.vmax))
+cont = input("Scaling ok? [vmin = %.1f, vmax = %.1f] (Y/n) : "%(args.vmin,args.vmax))
 if cont == 'Y':
 	pass
 else:
 	raise SystemExit
 
-fig = plt.figure()
+fig = plt.figure(figsize=(10,10))
 
 if args.nwindows == 1:
     ax = fig.add_subplot(211)
@@ -57,11 +68,13 @@ else:
     ax = fig.add_subplot(311)
 
 if args.instrument == "EFOSC":
-   im = ax.imshow(first_frame[0].data,vmin=args.vmin,vmax=args.vmax)
-   plt.xticks(visible=False)
+    im = ax.imshow(first_frame[0].data,vmin=vmin,vmax=vmax, aspect='auto')
+    #plt.xticks(visible=False)
+    plt.tick_params(left=False, labelleft=False, bottom=False, labelbottom=False)
+    plt.colorbar(im, )
 else:
-   im = ax.imshow(first_frame[1].data.T,vmin=args.vmin,vmax=args.vmax)
-   if args.nwindows > 1:
+    im = ax.imshow(first_frame[1].data.T,vmin=args.vmin,vmax=args.vmax)
+    if args.nwindows > 1:
         ax1 = fig.add_subplot(312)
         im1 = ax1.imshow(first_frame[2].data.T,vmin=args.vmin,vmax=args.vmax)
 
