@@ -29,6 +29,8 @@ from astropy.time import Time,TimeDelta
 # Prevent matplotlib plotting frames upside down
 plt.rcParams['image.origin'] = 'lower'
 
+plot_counter = 0
+max_plots = 28
 
 def gauss(x,amplitude,mean,std,offset):
     """A Gaussian with a fitted flux offset"""
@@ -45,6 +47,7 @@ def BIC(model,data,error,n):
 def find_spectral_trace(frame,guess_location,search_width,gaussian_width,trace_poly_order,trace_spline_sf,star=None,verbose=False,co_add_rows=0,instrument=None):
     """The function used to extract the location of a spectral trace either with a Gaussian or the argmax and then
     fits a nth order polynomial to these locations"""
+    global plot_counter
 
 
     if "JWST" in instrument: # we need to extract only the first array since the frame is an array of (flux_frame,error_frame)
@@ -180,6 +183,13 @@ def find_spectral_trace(frame,guess_location,search_width,gaussian_width,trace_p
             plt.xlabel('X pixel')
             plt.ylabel('Counts at row %d'%(i+1))
             plt.legend(loc='upper left',numpoints=1)
+
+            plot_counter += 1
+            if plot_counter <= max_plots:
+                title = 'Trace_detection_star_%d'%(star+1)
+                filename = f"output_plots/output_plot_{plot_counter}_{title}.png"
+                plt.savefig(filename)
+
             if delay == -2:
                 plt.show()
             else:
@@ -243,6 +253,13 @@ def find_spectral_trace(frame,guess_location,search_width,gaussian_width,trace_p
         plt.xlabel('X pixel')
         plt.ylabel('Y pixel')
         plt.tight_layout()
+
+        plot_counter += 1
+        if plot_counter <= max_plots:
+            title = 'Trace_detection_star_%d'%(star+1)
+            filename=f"output_plots/output_plot_{plot_counter}_{title}.png"
+            plt.savefig(filename)
+
         if delay == -2:
             plt.show()
         else:
@@ -256,6 +273,13 @@ def find_spectral_trace(frame,guess_location,search_width,gaussian_width,trace_p
             plt.xlabel('Y pixel')
             plt.ylabel('New poly - old poly')
             plt.title('Difference between trace polynomials before and after sigma clipping, star %d'%(star+1))
+            
+            plot_counter += 1
+            if plot_counter <= max_plots:
+                title = 'Difference_between_trace_polynomials_before_and_after_sigma_clipping_star_%d'%(star+1)
+                filename=f"output_plots/output_plot_{plot_counter}_{title}.png"
+                plt.savefig(filename)
+
             plt.show(block=False)
             plt.pause(delay)
             plt.close()
@@ -269,6 +293,13 @@ def find_spectral_trace(frame,guess_location,search_width,gaussian_width,trace_p
         plt.ylim(0,nrows)
         plt.title('Trace fitting, star %d'%(star+1))
         plt.legend(numpoints=1)
+
+        plot_counter += 1
+        if plot_counter <= max_plots:
+            title = 'Trace_fitting_star_%d'%(star+1)
+            filename=f"output_plots/output_plot_{plot_counter}_{title}.png"
+            plt.savefig(filename)
+
         # ~ plt.show()
         if delay == -2:
             plt.show()
@@ -285,6 +316,13 @@ def find_spectral_trace(frame,guess_location,search_width,gaussian_width,trace_p
         plt.xlabel('X pixel')
         plt.xlim(0,nrows)
         plt.legend(numpoints=1)
+
+        plot_counter += 1
+        if plot_counter <= max_plots:
+            title = 'Residuals_of_trace_fitting_star %d'%(star+1)
+            filename=f"output_plots/output_plot_{plot_counter}_{title}.png"
+            plt.savefig(filename)
+
         if delay == -2:
             plt.show()
         else:
@@ -301,6 +339,13 @@ def find_spectral_trace(frame,guess_location,search_width,gaussian_width,trace_p
             plt.xlabel('X pixel')
             plt.xlim(0,nrows)
             plt.legend(numpoints=1)
+
+            plot_counter += 1
+            if plot_counter <= max_plots:
+                title = 'Trace_width_star_%d'%(star+1)
+                filename=f"output_plots/output_plot_{plot_counter}_{title}.png"
+                plt.savefig(filename)
+
             if delay == -2:
                 plt.show()
             else:
@@ -318,7 +363,8 @@ def find_spectral_trace(frame,guess_location,search_width,gaussian_width,trace_p
 
 def extract_trace_flux(frame,trace,aperture_width,background_offset,background_width,pre_flat_frame,poly_bg_order,am,exposure_time,verbose,star,mask,instrument,row_min,gauss_std,readout_speed,co_add_rows,rectify_frame,oversampling_factor,gain_file,readnoise_file):
     """The function used to extract the flux of a single spectral trace, using normal extraction"""
-
+    global plot_counter
+    
     if verbose:
         if verbose == -1:
             verbose = False
@@ -402,6 +448,13 @@ def extract_trace_flux(frame,trace,aperture_width,background_offset,background_w
             plt.ylabel("X pixel")
             plt.legend()
             plt.title("Post-spatial rectification")
+
+            plot_counter += 1
+            if plot_counter <= max_plots:
+                title = "Post_spatial_rectification"
+                filename=f"output_plots/output_plot_{plot_counter}_{title}.png"
+                plt.savefig(filename)
+
             if verbose == -2:
                 plt.show()
             if verbose > 0:
@@ -510,6 +563,13 @@ def extract_trace_flux(frame,trace,aperture_width,background_offset,background_w
         plt.title('Aperture locations for star %d'%(star+1))
         plt.legend(framealpha=1)
         plt.tight_layout()
+
+        plot_counter += 1
+        if plot_counter <= max_plots:
+            title = 'Aperture_locations_for_star_%d'%(star+1)
+            filename=f"output_plots/output_plot_{plot_counter}_{title}.png"
+            plt.savefig(filename)
+
         if verbose == -2:
             plt.show()
         if verbose > 0:
@@ -731,6 +791,12 @@ def extract_trace_flux(frame,trace,aperture_width,background_offset,background_w
 
             ylim_full = ax.get_ylim()
 
+            plot_counter += 1
+            if plot_counter <= max_plots:
+                title = 'Aperture_locations_before_background_subtraction_with_background_fit_star_%d'%(star+1)
+                filename=f"output_plots/output_plot_{plot_counter}_{title}.png"
+                plt.savefig(filename)
+
             if verbose == -2:
                 plt.show()
             if verbose > 0:
@@ -783,6 +849,13 @@ def extract_trace_flux(frame,trace,aperture_width,background_offset,background_w
             plt.ylabel('Background subtracted counts at row %d'%(i+1))
             plt.ylim(-200,200)
             plt.legend(loc='upper left',numpoints=1,framealpha=1)
+
+            plot_counter += 1
+            if plot_counter <= max_plots:
+                title = 'Aperture_locations_after_background_subtraction_star_%d'%(star+1)
+                filename=f"output_plots/output_plot_{plot_counter}_{title}.png"
+                plt.savefig(filename)
+
             if verbose == -2:
                 plt.show()
             if verbose > 0:
@@ -818,6 +891,12 @@ def extract_trace_flux(frame,trace,aperture_width,background_offset,background_w
             plt.xlabel("Pixel column")
             # ~ ax2.set_ylabel("Pixel row")
 
+            plot_counter += 1
+            if plot_counter <= max_plots:
+                title = 'Background_substracted_image'
+                filename=f"output_plots/output_plot_{plot_counter}_{title}.png"
+                plt.savefig(filename)
+
             if verbose == -2:
                 plt.show()
             if verbose > 0:
@@ -833,6 +912,13 @@ def extract_trace_flux(frame,trace,aperture_width,background_offset,background_w
         plt.show(block=False)
         plt.ylabel('Integrated counts (DN/s)')
         plt.xlabel('Y pixel')
+
+        plot_counter += 1
+        if plot_counter <= max_plots:
+            title = 'Flux'
+            filename=f"output_plots/output_plot_{plot_counter}_{title}.png"
+            plt.savefig(filename)
+
         if verbose == -2:
             plt.show()
         if verbose > 0:
@@ -867,6 +953,7 @@ def extract_all_frame_fluxes(science_list,master_bias,master_flat,trace_dict,win
 
     """The funtion that loops through all science frames,finding the trace locations, extracting the flux, and saving the final
     output."""
+    global plot_counter
 
     # if verbose:
     #     if verbose == -1:
@@ -1112,6 +1199,13 @@ def extract_all_frame_fluxes(science_list,master_bias,master_flat,trace_dict,win
                     plt.title("Pixel mask, frame %d"%i)
                     plt.ylabel("Pixel column")
                     plt.xlabel("Pixel row")
+
+                    plot_counter += 1
+                    if plot_counter <= max_plots:
+                        title = 'Pixel_mask'
+                        filename=f"output_plots/output_plot_{plot_counter}_{title}.png"
+                        plt.savefig(filename)
+
                     if verbose == -2:
                         plt.show()
                     if verbose > 0:
@@ -1156,6 +1250,12 @@ def extract_all_frame_fluxes(science_list,master_bias,master_flat,trace_dict,win
                     plt.title("Post-pixel-masked frame")
                     plt.xlabel("Pixel column")
                     plt.ylabel("Pixel row")
+
+                    plot_counter += 1
+                    if plot_counter <= max_plots:
+                        title = 'Masked_frame'
+                        filename=f"output_plots/output_plot_{plot_counter}_{title}.png"
+                        plt.savefig(filename)
 
                     if verbose == -2:
                         plt.show()
@@ -1272,6 +1372,13 @@ def extract_all_frame_fluxes(science_list,master_bias,master_flat,trace_dict,win
                         plt.xlabel("Pixel number")
                         plt.ylabel("Standard deviation (pixels)")
                         plt.title("Gaussian-defined aperture widths")
+
+                        plot_counter += 1
+                        if plot_counter <= max_plots:
+                            title = 'Gaussian_defined_aperture_widths'
+                            filename=f"output_plots/output_plot_{plot_counter}_{title}.png"
+                            plt.savefig(filename)
+
                         if verbose == -2:
                             plt.show()
                         if verbose > 0:
@@ -1323,7 +1430,7 @@ def extract_all_frame_fluxes(science_list,master_bias,master_flat,trace_dict,win
         os.mkdir("pickled_objects")
     except:
         pass
-
+    
     for i in range(nstars):
         pickle.dump(np.array(stellar_fluxes[i::nstars]),open('pickled_objects/star%d_flux.pickle'%(i+1),'wb'))
         pickle.dump(np.array(stellar_errors[i::nstars]),open('pickled_objects/star%d_error.pickle'%(i+1),'wb'))
@@ -1415,6 +1522,8 @@ def generate_wl_curve(stellar_fluxes,stellar_errors,time,nstars,overwrite=True):
 
 
 def main(input_file='extraction_input.txt'):
+    global plot_counter
+    
     input_dict = parseInput(input_file)
 
     oversampling_factor = input_dict["oversampling_factor"]
@@ -1513,6 +1622,12 @@ def main(input_file='extraction_input.txt'):
 
     v = int(input_dict['verbose'])
 
+    if v:
+        try:
+            os.mkdir("output_plots")
+        except:
+            pass
+
     try:
         science_files = np.atleast_1d(np.loadtxt(input_dict['science_list'],str))
 
@@ -1555,6 +1670,8 @@ def main(input_file='extraction_input.txt'):
 
     # ~ if nstars > 1:
     generate_wl_curve(sf,se,time,nstars,overwrite)
+    plot_counter = 150
+
     return
 
 
@@ -1615,6 +1732,7 @@ def resample_frame(data,oversampling=10,xmin=0,verbose=False):
 
     Returns:
     data_resampled - the resampled image data"""
+    global plot_counter
 
     nrows,ncols = data.shape
     old_x = np.arange(xmin,ncols)
@@ -1636,6 +1754,13 @@ def resample_frame(data,oversampling=10,xmin=0,verbose=False):
         plt.ylabel("Counts (DN/s)")
         plt.title("Pixel resampling to deal with partial pixels")
         plt.legend()
+
+        plot_counter += 1
+        if plot_counter <= max_plots:
+            title = 'Pixel_resampling_to_deal_with_partial_pixels'
+            filename=f"output_plots/output_plot_{plot_counter}_{title}.png"
+            plt.savefig(filename)
+
         if verbose == -2:
             plt.show()
         if verbose > 0:
