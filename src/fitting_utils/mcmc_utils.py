@@ -155,7 +155,8 @@ def recover_quartiles_single(samples,namelist,bin_number,verbose=True,save_resul
 
         # calculate mode of rounded sample array
         key = namelist[i].replace('$','').replace("\\",'')
-        key = key.split("_")[0]
+        if not key[:len('lniL_')] == 'lniL_':
+            key = key.split("_")[0]
         rounded_par = np.round(par,namelist_decimal_places[key])
         mode_value, mode_count = stats.mode(rounded_par,keepdims=True)
         mode.append(mode_value[0])
