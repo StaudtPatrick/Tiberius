@@ -83,7 +83,8 @@ def find_spectral_trace(frame,guess_location,search_width,gaussian_width,trace_p
 
     row_array = np.arange(nrows)
 
-    plot_row = 2000#nrows//2
+    plot_row = nrows//2
+    #plot_row = 2000
 
     total_errors = [] # number of errors per frame
     force_verbose = False
