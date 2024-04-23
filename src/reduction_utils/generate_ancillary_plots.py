@@ -111,8 +111,8 @@ try:
     nsubplots += 1
 
 except:
-    sky1 = pickle.load(open('sky_avg_star1.pickle','rb'))[:am_cut]
-    sky2 = pickle.load(open('sky_avg_star2.pickle','rb'))[:am_cut]
+    sky1 = pickle.load(open('background_avg_star1.pickle','rb'))[:am_cut]
+    sky2 = pickle.load(open('background_avg_star2.pickle','rb'))[:am_cut]
 
     sky1_left = pickle.load(open('sky_left_star1.pickle','rb'))[:am_cut]
     sky1_right = pickle.load(open('sky_right_star1.pickle','rb'))[:am_cut]
