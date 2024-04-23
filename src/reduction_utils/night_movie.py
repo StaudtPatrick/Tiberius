@@ -18,7 +18,7 @@ parser.add_argument("-inst","--instrument",help="ACAM or EFOSC?")
 parser.add_argument('-nwin','--nwindows',help='How many windows were used? (For ACAM only)',type=int,default=1)
 parser.add_argument('-skip','--skip',help='Use to skip each N files, if dealing with many images',type=int)
 parser.add_argument('-vmin','--vmin',help='Use this to set the minimum value for the imshow. Default = 0.1 (10%)',type=float,default=0.1)
-parser.add_argument('-vmax','--vmax',help='Use this to set the minimum value for the imshow. Default = 0.9 (90%)',type=float,default=0.9)
+parser.add_argument('-vmax','--vmax',help='Use this to set the maximum value for the imshow. Default = 0.9 (90%)',type=float,default=0.9)
 args = parser.parse_args()
 
 file_list = np.loadtxt(args.science_list,str)[::args.skip]
