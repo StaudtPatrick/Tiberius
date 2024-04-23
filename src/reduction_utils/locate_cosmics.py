@@ -163,7 +163,7 @@ def plot_cosmic_frames(cosmic_pixels, save_frames=False):
         plt.imshow(c,cmap='Greys', interpolation='none',aspect="auto")
         plt.title("Frame %d"%i)
         plt.xlabel("Pixel column")
-        plt.xlabel("Pixel row")
+        plt.ylabel("Pixel row")
         if save_frames:
             plt.savefig('locate_cosmics/' + filename + '.png')
         plt.show(block=False)
