@@ -165,6 +165,7 @@ def plot_cosmic_frames(cosmic_pixels, save_frames=False):
         plt.xlabel("Pixel column")
         plt.xlabel("Pixel row")
         if save_frames:
+            plt.savefig('locate_cosmics/' + filename + '.png')
         plt.show(block=False)
         plt.pause(1e-6)
         plt.clf()
@@ -357,7 +358,20 @@ if args.verbose:
 if not args.verbose:
     print("Plotting frames with high number of cosmics...\n")
     cosmic_pixels = check_cosmic_frames(cosmic_pixels, args.frame_clip, args.save_frames)
-    
+    if args.save_frames:
+        image_files = sorted(glob.glob('locate_cosmics/Frame_*.png'), key=extract_frame_number)
+
+        if len(image_files) >= 2:
+            images = [Image.open(image_file) for image_file in image_files]
+
+            # Specify the output file path
+            output_gif_path = 'locate_cosmics/cosmics_corr_movie.gif'
+
+            # Save as a GIF
+            images[0].save(output_gif_path, save_all=True, append_images=images[1:], duration=500, loop=0)
+        else:
+            pass
+            
 
 # save the cosmic masks
 pickle.dump(cosmic_pixels,open("locate_cosmics/cosmic_pixel_mask_%dsigma_clip.pickle"%(cut_off*10),"wb"))
