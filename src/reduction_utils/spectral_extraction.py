@@ -508,7 +508,7 @@ def extract_trace_flux(frame,trace,aperture_width,background_offset,background_w
     error_from_scintillation = []
     error_from_source = []
 
-    if background_width == 1: # we're using whole width of the window
+    if background_width == [1,1]: # we're using whole width of the window
         left_bkg_left_hand_edge = buffer_pixels
         right_bkg_right_hand_edge = ncols - buffer_pixels
 
@@ -543,14 +543,14 @@ def extract_trace_flux(frame,trace,aperture_width,background_offset,background_w
         plt.plot(trace-aperture_width//2,np.arange(nrows),'r')
 
         plt.plot(trace-aperture_width/2-background_offset,np.arange(nrows),'r--',label="background region")
-        if background_width != 1: # we're not using whole width of window
-            plt.plot(trace-aperture_width//2-background_offset-background_width,np.arange(nrows),'r--')
+        if background_width != [1,1]: # we're not using whole width of window
+            plt.plot(trace-aperture_width//2-background_offset-background_width[0],np.arange(nrows),'r--')
         else:
             plt.axvline(left_bkg_left_hand_edge,color='r',ls='--')
 
         plt.plot(trace+aperture_width//2+background_offset,np.arange(nrows),'r--')
-        if background_width != 1: # we're not using whole width of window
-            plt.plot(trace+aperture_width//2+background_offset+background_width,np.arange(nrows),'r--')
+        if background_width != [1,1]: # we're not using whole width of window
+            plt.plot(trace+aperture_width//2+background_offset+background_width[1],np.arange(nrows),'r--')
         else:
             plt.axvline(right_bkg_right_hand_edge,color='r',ls='--')
 
@@ -616,7 +616,7 @@ def extract_trace_flux(frame,trace,aperture_width,background_offset,background_w
         else:
             buffer_pixels_left = buffer_pixels_right = buffer_pixels
 
-        if background_width == 1: # we're using whole width of the window
+        if background_width == [1,1]: # we're using whole width of the window
             # have to update background edges
             left_bkg_left_hand_edge = buffer_pixels_left
             right_bkg_right_hand_edge = ncols - buffer_pixels_right
@@ -646,10 +646,10 @@ def extract_trace_flux(frame,trace,aperture_width,background_offset,background_w
             else:
                 error_from_source.append(np.nan)
 
-        if background_width != 1: # we're not using full width of the chip
+        if background_width != [1,1]: # we're not using full width of the chip
 
             # Using left hand edge of pixels defined as integer not np.floor
-            left_bkg_left_hand_edge = trace[i]-aperture_width//2-background_offset-background_width
+            left_bkg_left_hand_edge = trace[i]-aperture_width//2-background_offset-background_width[0]
 
             # Replace left hand edge with hard edge if the chosen location falls too close to the edge of the window
             if left_bkg_left_hand_edge <= buffer_pixels_left:
@@ -659,10 +659,10 @@ def extract_trace_flux(frame,trace,aperture_width,background_offset,background_w
 
         left_bkg_right_hand_edge = aperture_left_hand_edge - background_offset
 
-        if background_width != 1:
+        if background_width != [1,1]:
 
             # Using left hand (integer) edge of right hand aperture
-            right_bkg_right_hand_edge = trace[i]+aperture_width//2+background_offset+background_width
+            right_bkg_right_hand_edge = trace[i]+aperture_width//2+background_offset+background_width[1]
 
             # Replace right hand edge with hard edge if the chosen location falls too close to the edge of the window
             if right_bkg_right_hand_edge >= ncols - buffer_pixels_right:
@@ -673,7 +673,7 @@ def extract_trace_flux(frame,trace,aperture_width,background_offset,background_w
         right_bkg_left_hand_edge = aperture_right_hand_edge + background_offset
 
         # check background width is not too narrow (less than 10 pixels on either side)
-        if background_width == 1:
+        if background_width == [1,1]:
 
             if (left_bkg_right_hand_edge - left_bkg_left_hand_edge) <  10:
                 lh_overlap.append(left_bkg_right_hand_edge - left_bkg_left_hand_edge)
@@ -1394,13 +1394,13 @@ def extract_all_frame_fluxes(science_list,master_bias,master_flat,trace_dict,win
 
                 if "JWST" in instrument: # only return the key arrays since the data files are so large and consume too much memory
                     flux,error,sky_avg = extract_trace_flux(frame,trace,aperture_width[star_number],background_offset[star_number],\
-                                                                                                    background_width[star_number],uncorrected_frame[0],poly_bg_order[star_number],am,\
+                                                                                                    background_width[2*star_number:2*star_number+2],uncorrected_frame[0],poly_bg_order[star_number],am,\
                                                                                                     exposure_time,force_verbose,star_number,masks['mask%d'%(star_number+1)],instrument,row_min,trace_std,readout_speed,co_add_rows,rectify_frame,oversampling_factor,\
                                                                                                     gain_file,readnoise_file)
 
                 else:
                     flux,error,sky_avg,sky_left,sky_right,base_left,base_right,max_counts,rn_error,scin_error,pois_error,bkg_poly_order,raw_star_flux = extract_trace_flux(frame,trace,aperture_width[star_number],background_offset[star_number],\
-                                                                                background_width[star_number],uncorrected_frame,poly_bg_order[star_number],am,\
+                                                                                background_width[2*star_number:2*star_number+2],uncorrected_frame,poly_bg_order[star_number],am,\
                                                                                 exposure_time,force_verbose,star_number,masks['mask%d'%(star_number+1)],instrument,row_min,trace_std,readout_speed,co_add_rows,rectify_frame,oversampling_factor,\
                                                                                 gain_file,readnoise_file)
 
@@ -1576,13 +1576,50 @@ def main(input_file='extraction_input.txt'):
         background_offsets = background_offsets*nstars
 
     background_widths = []
-    for x in input_dict['background_width'].split(","):
-        if int(x) > 1:
-            background_widths.append(int(x)*oversampling_factor)
-        else:
-            background_widths.append(1)
-    if len(background_widths) == 1:
-        background_widths = background_widths*nstars
+    background_width_input = input_dict.get('background_width', None)
+    
+    if background_width_input == '':
+        raise ValueError("Invalid background_width format: Empty background_width input")
+    
+    # Single value input
+    elif ',' not in background_width_input and ';' not in background_width_input:
+        for i in range(nstars):
+            if int(background_width_input)>1:
+                background_widths.extend([int(background_width_input) * oversampling_factor] *2)
+            else:
+                background_widths.extend([1]*2)
+
+    # Check if correct number of groups are given            
+    elif background_width_input.count(';') != nstars - 1:
+        raise ValueError("Invalid background_width format: Incorrect number of groups")
+    
+    else:
+        # Parse input for each star
+        star_backgrounds = background_width_input.split(';')
+
+        for star_background in star_backgrounds:
+            widths = [int(val) for val in star_background.split(',')]
+
+            # If only one width is provided, use it for both left and right sides
+            if len(widths) == 1:
+                if widths[0]>1:
+                    background_widths.extend([widths[0] * oversampling_factor] * 2)
+                else:
+                    background_widths.extend([widths[0]] * 2)
+                    
+            # If 1 is provided along with an other value, give error message. Full CCD can not be done along with pixel range
+            elif 1 in widths:
+                raise ValueError("Invalid background_width format: You cannot use full CCD and pixel range at the same time")
+        	
+            # If two widths are provided, append them to background_widths
+            elif len(widths) == 2:
+                if widths[0]>1:
+                    background_widths.extend([width * oversampling_factor for width in widths])
+                else:
+                    background_widths.extend([width for width in widths])
+            
+            else:
+                raise ValueError(f"Invalid background_width format: Incorrect input for star: {star_background}")
 
 
     mask_input = input_dict['masks']
