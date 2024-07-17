@@ -10,7 +10,7 @@ from scipy.interpolate import UnivariateSpline as US
 
 from global_utils import parseInput
 from fitting_utils import mcmc_utils as mc
-from fitting_utils import TransitModelGPPM as tmgp
+from fitting_utils import TransitModelGPPM_spotrod as tmgp
 from fitting_utils import parametric_fitting_functions as pf
 from fitting_utils import plotting_utils as pu
 
@@ -99,20 +99,18 @@ if input_dict['common_noise_model'] is not None:
     if show_plots:
         plt.figure()
         plt.errorbar(time,flux,yerr=flux_error,fmt='o',alpha=0.5,ecolor='r',color='r',capsize=2,label='Before correction')
-        plt.errorbar(time,flux/common_noise_model,yerr=flux_error,fmt='o',ecolor='k',color='k',capsize=2,alpha=0.5,label='After correction')
+        plt.errorbar(time,flux-common_noise_model,yerr=flux_error,fmt='o',ecolor='k',color='k',capsize=2,alpha=0.5,label='After correction')
         plt.xlabel('Time (MJD)')
         plt.ylabel('Normalised flux')
         plt.title('Common mode correction')
         plt.legend(loc='upper left')
-        plt.show(block=False)
-        plt.pause(5)
-        plt.close()
+        plt.savefig('Common_noise_corr%i.png'%wb)
 
     y = flux
 
     # Divide by the common noise model
-    flux = flux/common_noise_model
-    flux_error = (flux_error/y)*flux
+    flux = flux-common_noise_model
+    #flux_error = (flux_error/y)*flux
 
 
 ### Red noise polynomial model parameters
@@ -413,6 +411,20 @@ d['period'] = period
 d['ecc'] = ecc
 d['omega'] = omega
 d['k'] = k
+
+# Do we want to use a Spot Model?
+use_spot_model = False
+if input_dict['spot_fitting'] is not None:
+    use_spot_model = True
+
+if use_spot_model:
+    spot_fits = np.array([int(i) for i in input_dict['spot_fitting'].split(',')])
+    spot_parameters = ['spot_x', 'spot_y', 'spot_radius', 'spot_contrast']
+    for j in range(len(spot_parameters)):
+        if spot_fits[j] == 1:
+            d[spot_parameters[j]] = tmgp.Param(float(input_dict[spot_parameters[j]]))
+        else:
+            d[spot_parameters[j]] = float(input_dict[spot_parameters[j]])
 
 if not use_kipping:
 
@@ -724,8 +736,8 @@ pickle.dump(keep_idx,open('data_quality_flags_wb%s.pickle'%(str(wb+1).zfill(4)),
 if clip_outliers:
     print("\n %d data points (%.2f%%) clipped from fit"%(len(time)-len(clipped_time),100*(len(time)-len(clipped_time))/len(time)))
 
-starting_model = tmgp.TransitModelGPPM(d,clipped_model_input,kernel_classes,clipped_flux_error,clipped_time,kernel_priors_dict,white_noise_kernel,use_kipping,ld_prior,polynomial_orders,ld_law,exp_ramp_used,exp_ramp_components,step_func_used)
-
+starting_model = tmgp.TransitModelGPPM(d,clipped_model_input,kernel_classes,clipped_flux_error,clipped_time,kernel_priors_dict,white_noise_kernel,use_kipping,ld_prior,polynomial_orders,ld_law,exp_ramp_used,exp_ramp_components,step_func_used, use_spot_model)
+print(starting_model.namelist)
 if not optimise_model and show_plots:
     print("plotting starting model")
     fig = pu.plot_single_model(starting_model,clipped_time,clipped_flux,clipped_flux_error,save_fig=False)
