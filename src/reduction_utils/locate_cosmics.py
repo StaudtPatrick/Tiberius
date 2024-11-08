@@ -303,6 +303,9 @@ def replace_cosmics(cosmic_pixels,medians,science_list,nints,jwst=False):
         f = fits.open(science_list[i])
         f_new = copy.deepcopy(f)
         filename = science_list[i].split("/")[-1]
+        if bias:
+            print('TEST')
+            f_new[0].data = f_new[0].data - master_bias
 
         print("Cleaning frame %i"%(i+1))
 
