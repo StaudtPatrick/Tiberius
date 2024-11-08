@@ -24,7 +24,7 @@ args = parser.parse_args()
 file_list = np.loadtxt(args.science_list,str)[::args.skip]
 
 
-time, flux, flux_err = np.loadtxt('../white_light.txt',unpack=True)
+time, flux, flux_err = np.loadtxt('../WL_curve/white_light.txt',unpack=True)
 time = time[::args.skip]
 flux = flux[::args.skip]
 flux_err = flux_err[::args.skip]
@@ -113,5 +113,5 @@ def init(i):
 
     return im
 
-anim = matplotlib.animation.FuncAnimation(fig, init, frames=nframes,repeat=False,save_count=0)
-anim.save('night_movie.gif', writer='imagemagick', fps=10)
+anim = matplotlib.animation.FuncAnimation(fig, init, frames=nframes, repeat=False, save_count=0)
+anim.save('../night_movie.gif', writer='imagemagick', fps=10)

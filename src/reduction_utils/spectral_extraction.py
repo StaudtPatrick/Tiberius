@@ -1473,6 +1473,11 @@ def generate_wl_curve(stellar_fluxes,stellar_errors,time,nstars,overwrite=True):
 
     """Generate the white light curve and output to table and figure"""
 
+    try:
+        os.mkdir("WL_curve")
+    except:
+        pass
+
     star1 = stellar_fluxes[::nstars]
     error1 = stellar_errors[::nstars]
 
@@ -1487,12 +1492,12 @@ def generate_wl_curve(stellar_fluxes,stellar_errors,time,nstars,overwrite=True):
         ratio = np.mean(star1,axis=1)
         err_ratio = np.mean(error1,axis=1)
 
-    if overwrite or not os.path.isfile('white_light.txt'):
-        tab = open('white_light.txt','w')
+    if overwrite or not os.path.isfile('WL_curve/white_light.txt'):
+        tab = open('WL_curve/white_light.txt','w')
         old_time = None
     else:
-        tab = open('white_light.txt','a')
-        old_time,old_ratio,old_err_ratio = np.loadtxt('white_light.txt',unpack=True)
+        tab = open('WL_curve/white_light.txt','a')
+        old_time,old_ratio,old_err_ratio = np.loadtxt('WL_curve/white_light.txt',unpack=True)
 
     for i in range(len(ratio)):
         tab.write("%f %f %f \n"%(time[i],ratio[i],err_ratio[i]))
@@ -1502,22 +1507,22 @@ def generate_wl_curve(stellar_fluxes,stellar_errors,time,nstars,overwrite=True):
     plt.figure(figsize=(8,6))
     if old_time is None:
         plt.plot(time-int(time[0]),ratio,'k.')
-        plt.xlabel('Time (MJD/BJD - %d)'%int(time[0]))
+        plt.xlabel('Time (MJD - %d)'%int(time[0]))
     else:
         plt.plot(np.hstack((old_time,time))-int(old_time[0]),np.hstack((old_ratio,ratio)),'k.')
-        plt.xlabel('Time (MJD/BJD - %d)'%int(old_time[0]))
+        plt.xlabel('Time (MJD - %d)'%int(old_time[0]))
     plt.ylabel('Flux')
-    plt.savefig('white_light_curve.pdf')
+    plt.savefig('WL_curve/white_light_curve.pdf')
     plt.close()
 
     try:
-        os.mkdir("./initial_WL_fit")
+        os.mkdir("WL_curve/initial_WL_fit")
     except:
         pass
 
-    pickle.dump(time-time[0],open("./initial_WL_fit/initial_WL_time.pickle","wb"))
-    pickle.dump(ratio,open("./initial_WL_fit/initial_WL_flux.pickle","wb"))
-    pickle.dump(err_ratio,open("./initial_WL_fit/initial_WL_err.pickle","wb"))
+    pickle.dump(time-int(time[0]),open("WL_curve/initial_WL_fit/initial_WL_time.pickle","wb"))
+    pickle.dump(ratio,open("WL_curve/initial_WL_fit/initial_WL_flux.pickle","wb"))
+    pickle.dump(err_ratio,open("WL_curve/initial_WL_fit/initial_WL_err.pickle","wb"))
 
     return
 

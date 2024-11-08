@@ -8,7 +8,7 @@ import argparse
 parser = argparse.ArgumentParser(description='Make arc movies')
 parser.add_argument("arclist", help="Load in the list of arc files")
 parser.add_argument("-out", "--output", help="Output file name")
-parser.add_argument("-cmap", "--colormap", default='gray', help="Colormap for the output plots")
+parser.add_argument("-i", "--intrinsic", help="If you want a better scaling", action='store_true')
 args = parser.parse_args()
 
 
@@ -38,7 +38,11 @@ nframes = len(file_list)
 
 # Create the initial plot with the first frame data
 first_frame = fits.open(file_list[0])
-im = ax.imshow(first_frame[0].data, cmap=args.colormap)
+if args.intrinsic:
+    vmin,vmax = np.nanpercentile(first_frame[0].data,[10,90])
+    im = ax.imshow(first_frame[0].data,vmin=vmin,vmax=vmax,aspect='auto')
+else:
+    im = ax.imshow(first_frame[0].data, cmap='gray', aspect='auto')
 first_frame.close()
 
 # Create animation

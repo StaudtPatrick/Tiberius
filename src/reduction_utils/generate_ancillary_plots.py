@@ -146,7 +146,7 @@ nsubplots += 1
 if args.model1 is None and args.model2 is None:
     print('Not plotting white light model fit')
     plot_model = False
-    white_light = np.loadtxt('white_light.txt')
+    white_light = np.loadtxt('../WL_curve/white_light.txt')
     wl_flux = white_light[:,1][:am_cut]
     wl_error = white_light[:,2][:am_cut]
 
@@ -442,6 +442,7 @@ plt.subplots_adjust(hspace=0)
 plt.xlabel('Time (MJD - %d)'%int(mjd[0]))
 
 if args.save_figure:
-    plt.savefig('ancillary_plots.pdf',bbox_inches='tight')
+    plt.savefig('../ancillary_plots.pdf',bbox_inches='tight')
+    plt.savefig('../ancillary_plots.png',bbox_inches='tight')
 
 plt.show()
