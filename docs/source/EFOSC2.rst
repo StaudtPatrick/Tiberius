@@ -2,15 +2,14 @@
 
 Handling EFOSC2 DATA
 ====================
-Firstly, you will need to download your data! Navigate to the `ESO <https://archive.eso.org/eso/eso_archive_main.html>`_ science archive facility and find your target. Check the box of the files you want to aquire and download the files.
+Firstly, you will need to download your data! Navigate to the `ESO <https://archive.eso.org/eso/eso_archive_main.html>`_ science archive facility and find your target. Check the box of the files you want to acquire and download the files.
 
 Stage 1: File and Folder Structure
 ------------------------------------
 
 .. _stage1:
-
-After downloading and unpacking the EFOSC2 data, save the actual spectroscopic science files into the folder ``raw_science_files`` and the calibration files (e.g. bias, flat, arc, ...) into the ``calib_folder``.
-Then build the folder ``data_analysis``.
+Under your project folder build the following three folders: ``raw_science_files``, ``calib_files`` and ``data_analysis``.
+After downloading and unpacking the EFOSC2 data, save the actual spectroscopic science files and calibration files (e.g. bias, flat, arc) into the corresponding folders.
 
 1.1: Working Lists
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -24,7 +23,7 @@ The argument -c enables it to overwrite files.
 
 .. note::
 
-  In case the list names contain blanck spaces, change it to ``_``. Then copy the list containing the paths of the single science files to the ``data_analysis`` folder.
+  In case the list names contain blank spaces, change it to ``_``. Then copy the list containing the paths of the single science files to the ``data_analysis`` folder.
 
 
 Stage 2: DATA REDUCTION ON RAW SCIENCE FRAME LEVEL
