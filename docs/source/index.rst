@@ -59,4 +59,5 @@ A dedicated Tiberius paper is in the pipeline.
 
    installation
    jwst
+   EFOSC2
    api
