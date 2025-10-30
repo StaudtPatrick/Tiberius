@@ -69,7 +69,8 @@ The results will be a master bias .fits and .png/.pdf file.
 
 2.2: Flat Fielding
 ~~~~~~~~~~~~~~~~~~~~~~~~
-Under construction
+Usually this part is not used. It was shown in several works (Kirk et al. 2017; Alderson et al. 2020; Kirk et al. 2021) that the master flat does enlarge the errors instead of reducing
+them. If you want to use it: In construction
 
 2.3: Cosmic Ray Correction
 ~~~~~~~~~~~~~~~~~~~~~~~~
