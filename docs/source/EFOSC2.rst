@@ -49,7 +49,23 @@ Stage 2: Data Reduction on Raw Science Frame Level
 
 2.1: Bias Correction
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
-Under construction
+Within the data analysis folder do:
+
+.. code-block:: bash
+  
+  $ python -m reduction utils.master bias list -inst=instrument -v -c -s
+
+list: list for bias files
+
+-inst: instrument; argument for the used instrument (EFOSC2)
+
+-v: verbose; argument if you want to display plots
+
+-c: clobber; argument if you want to save master bias
+
+-s: savefig; argument if you want to save the single bias png’s in an .gif file.
+
+The results will be a master bias .fits and .png/.pdf file.
 
 2.2: Flat Fielding
 ~~~~~~~~~~~~~~~~~~~~~~~~
