@@ -27,7 +27,16 @@ The argument -c enables it to overwrite files.
 
 1.2: Generate Gifs
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
-Under construction
+For a better understanding of the data, visualize the science frames and the arc files in gifs. Therfor, call in the ``calib_files`` and in the ``science_files_raw`` folders:
+
+.. code-block:: bash
+  
+  $ python -m reduction\_utils.generate\_gifs list -inst=instrument -out=outputname -i
+
+list: list for raw files and arc files\\
+-inst: instrument; argument for the used instrument (ACAM or EFOSC)\\
+-out: outputname; argument for the name of the output file\\
+-i: intrinsic; argument if you want to have a better scaling
 
 
 Stage 2: Data Reduction on Raw Science Frame Level
