@@ -31,10 +31,10 @@ For a better understanding of the data, visualize the science frames and the arc
 
 .. code-block:: bash
   
-  $ python -m reduction\_utils.generate\_gifs list -inst=instrument -out=outputname -i
+  $ python -m reduction_utils.generate_gifs list -inst=instrument -out=outputname -i
 
 list: list for raw files and arc files\\
--inst: instrument; argument for the used instrument (ACAM or EFOSC)\\
+-inst: instrument; argument for the used instrument (EFOSC2)\\
 -out: outputname; argument for the name of the output file\\
 -i: intrinsic; argument if you want to have a better scaling
 
