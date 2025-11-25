@@ -1,0 +1,4 @@
+# Tiberius Control File for Stage 0: Create Lists
+
+# Instrument used: Choose between "JWST", "EFOSC2", "ACAM" and "KECK"
+instrument:                  "EFOSC2"
