@@ -1,0 +1,36 @@
+# Tiberius Control File for Stage 1: Pre-Processing
+
+# Instrument used: Choose between "JWST", "EFOSC2", "ACAM" and "KECK"
+instrument                  EFOSC2
+
+
+# Pipeline stages
+skip_bias	           	      False
+skip_flats	              	True
+skip_1fcorrection         	True	
+skip_cosmics		          	False
+skip_badpixelmask          	True	
+
+# Bias
+bias_list                  	/path/to/file
+bias_verbose               	True
+bias_clobber	           	  True
+bias_savefigs              	True
+
+# Flats
+# Under construction
+
+# 1/f correction
+# Under construction
+
+# Cosmic rays
+locatecosmic_list          	/path/to/file  or take automatically ?
+master_bias_file           	#take automatically ??
+locatecosmic_pixelclip     	8
+locatecosmic_verbose		    True
+locatecosmic_saveframes		  True
+locatecosmic_savecosmics	  True
+locatecosmic_review         True
+
+# Bad-Pixel-Mask
+# Under construction
