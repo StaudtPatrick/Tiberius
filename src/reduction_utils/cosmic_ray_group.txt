@@ -1,0 +1,3 @@
+# sigma_group   frames
+6               21,22
+13              70,71    
