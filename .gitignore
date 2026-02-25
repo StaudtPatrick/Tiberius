@@ -134,3 +134,14 @@ dmypy.json
 
 *.pyc
 
+# Project file 
+/hatp65
+/project_folder
+/config
+
+# Other notebooks
+dummy_file.py
+xarray_test.ipynb
+
+# Other files
+test.tcf

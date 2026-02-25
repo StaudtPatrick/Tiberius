@@ -94,7 +94,7 @@ def save_to_xarray(bad_pixels, bad_pixel_dir, name, method, meta=None, cut_off=N
     bad_pixels_da.attrs['created'] = datetime.now(timezone.utc).isoformat()
 
     if cut_off != None:
-        bad_pixels_da.attrs['median_cut_off'] = cut_off
+        bad_pixels_da.attrs['bad_pixel_median_cut_off'] = cut_off
 
     
     # Output as h5 

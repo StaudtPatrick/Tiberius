@@ -44,6 +44,8 @@ skip_1fcorrection             1
 # Under construction
 
 # Cosmic rays
+science_list
+master_flat
 locate_cosmics_list           path/to/file
 locate_cosmics_pixelclip      8
 locate_cosmics_verbose        True

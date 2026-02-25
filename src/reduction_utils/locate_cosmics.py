@@ -24,18 +24,24 @@ plt.rcParams['image.origin'] = 'lower'
 #  HELPER FUNCTIONS
 # ---------------------------------------------------------------------------
 
-def save_to_xarray(array, array_dir, name, pixelclip, bias_path):
+def save_to_xarray(array, array_dir, name, pixelclip, bias_path, meta=None):
 
     # Make a xarray
-    bad_pixels_da = xr.DataArray(array, name=name)
+    arraylist_da = xr.DataArray(array, name=name)
         
     # Add attributes (metadata)
-    bad_pixels_da.attrs['locate_cosmic_sigma'] = pixelclip
-    bad_pixels_da.attrs['master_bias'] = bias_path
-    bad_pixels_da.attrs['date'] = datetime.now(timezone.utc).isoformat()
+    arraylist_da.attrs['locate_cosmic_sigma'] = pixelclip
+    arraylist_da.attrs['master_bias'] = bias_path
+    arraylist_da.attrs['date'] = datetime.now(timezone.utc).isoformat()
+
+    # Put all of the attributes from meta as well to the array
+    # Add the attributes from the meta file
+    # if meta is not None:
+    #     for key, value in meta.attrs.items():
+    #         bad_pixels_da.attrs[key] = value
 
     # Output as h5 
-    bad_pixels_da.to_netcdf(array_dir + f"/{name}.h5", engine="h5netcdf")
+    arraylist_da.to_netcdf(array_dir + f"/{name}.h5", engine="h5netcdf")
 
 # ---------------------------------------------
 
@@ -63,11 +69,35 @@ def create_gif(gif_output, save_dir):
 
     print(f"GIF created → {gif_name}")
 
+# ---------------------------------------------
+
+def assign_group_array(grouppath, cut_off_arr):
+
+    """Read txt file to get different sigma groups"""
+
+    with open(grouppath, "r") as f:
+
+        for line in f:
+
+            line = line.strip()
+
+            if line.startswith("#"):
+                continue
+
+            value_str, frames_str = line.split(maxsplit=1)
+            value = int(value_str)
+
+            for frame in frames_str.split(","):
+                frame = int(frame)
+                cut_off_arr[frame-1] = value
+        
+    return cut_off_arr
+
 # ---------------------------------------------------------------------------
 #  LOCATE COSMIC FUNCTIONS
 # ---------------------------------------------------------------------------
 
-def locate_zeroes(nframes, plot_neg_cosmic_map, plot_neg_med_map, plot_dir, showfig, savefig):
+def locate_zeroes(nframes, plot_neg_med_map, plot_dir, savefig):
 
     neg_plot_dir = os.path.join(plot_dir, 'negative_median')
     os.makedirs(neg_plot_dir, exist_ok=True)
@@ -78,27 +108,6 @@ def locate_zeroes(nframes, plot_neg_cosmic_map, plot_neg_med_map, plot_dir, show
             n = '0{}'.format(i+1)
         else:
             n = i + 1
-
-    #     plt.figure(figsize=[15, 10])
-    #     plt.imshow(plot_neg_cosmic_map[i], cmap='viridis', origin='lower')
-    #     plt.colorbar()
-    #     plt.title("Negative median values for cosmic frame {}".format(i+1))
-    #     plt.xlabel("Pixel column")
-    #     plt.ylabel("Pixel row")
-        
-    #     # Save the plot
-    #     filename = os.path.join(neg_plot_dir, 'cosmic_negative_median_frame_{}.png'.format(n))
-
-    #     if savefig:
-    #         plt.savefig(filename)
-    #     if showfig:
-    #         plt.show(block=False)
-    #         plt.pause(1e-6)
-
-    #     plt.close()
-
-
-        # -------
 
         plt.figure(figsize=[15, 10])
         plt.imshow(plot_neg_med_map[i], cmap='viridis', origin='lower')
@@ -112,9 +121,6 @@ def locate_zeroes(nframes, plot_neg_cosmic_map, plot_neg_med_map, plot_dir, show
 
         if savefig:
             plt.savefig(filename)
-        # if showfig:
-        #     plt.show(block=False)
-        #     plt.pause(1e-6)
 
         plt.close()
 
@@ -122,6 +128,7 @@ def locate_zeroes(nframes, plot_neg_cosmic_map, plot_neg_med_map, plot_dir, show
 
 def locate_bad_frames(image_data, pixel_row, pixel_col, cut_off_arr, plot_path,
                       showfig=False, savefig=False):
+    
     """The function that locates the frames/pixels where cosmics are located.
 
     Inputs:
@@ -257,12 +264,14 @@ def check_cosmic_frames(cosmic_pixels, frame_cut_off, plot_dir, showfig=False, s
 
         if ncosmics > frame_cut_off*median_cosmics:
 
-            print("Integration %d has %.2fX the median number of cosmics, somethings up"%(i,ncosmics/median_cosmics))
+            percent = ncosmics/median_cosmics
+
+            print(f"Frame {(i+1)} has {percent:.2f}X the median number of cosmics, somethings up")
 
             plt.figure()
             plt.imshow(c,cmap='Greys', interpolation='none',aspect="auto")
             incorrectly_flagged_cosmics.append(i)
-            plt.title("Integration %d"%i)
+            plt.title(f"Frame {i+1}")
             plt.ylabel("Pixel row")
             plt.xlabel("Pixel column")
 
@@ -279,7 +288,7 @@ def check_cosmic_frames(cosmic_pixels, frame_cut_off, plot_dir, showfig=False, s
 
             plt.clf()
 
-            reset_mask = input("Reset mask for frame %d? [y/n]: "%i)
+            reset_mask = input(f"Reset mask for frame {i+1}? [y/n]: ")
             if reset_mask == "y":
                 print("...resetting mask\n")
                 cosmic_pixels[i] = np.zeros_like(c)
@@ -326,14 +335,14 @@ def replace_cosmics(cosmic_pixels, medians, science_list, nints, cut_off_name, i
             else:
                 jwst_index_counter = i
 
-            print("Cleaning integration %d, %s"%(i,filename))
+            print("Cleaning Frame %d, %s"%(i,filename))
 
             for row in range(nrows):
                 new_fits_file["SCI"].data[jwst_index_counter][row][c[row]] = medians[i][row][c[row]]
 
             if i in nints-1:
                 fits_file.close()
-                print("Saving cosmic_cleaned_fits/%s"%(filename))
+                print(f"Saving cosmic_cleaned_fits/{filename}")
                 file_path = os.path.join(cleaned_direc, filename)
                 new_fits_file.writeto(file_path, overwrite=True)
         
@@ -386,12 +395,20 @@ def locate_and_correct_cosmic(meta):
     groups = meta.attrs["locate_cosmics_groups"]
     gifs = meta.attrs["locate_cosmics_gifs"]
 
+    # If there is bad pixel
     if badpixel:
-        badpixelpath = meta.attrs["bad_pixel_mask"]
-        badpixellist = os.path.join(save_dir, "bad_pixel_mask", badpixelpath)
+        try: 
+            badpixelpath = meta.attrs["bad_pixel_mask"]
+            badpixellist = os.path.join(save_dir, "bad_pixel_mask", badpixelpath)
+        except KeyError:
+            print("No bad pixel path")
 
     if groups:
-        grouplist = meta.attrs["locate_cosmics_groups"]
+        try:
+            grouppath = meta.attrs["locate_cosmics_groupspath"]
+            grouplist = os.path.join(inputdir, grouppath)
+        except KeyError:
+            print("No group list")
 
     # Loading data
     # ----------------------------------------
@@ -420,6 +437,7 @@ def locate_and_correct_cosmic(meta):
     data = []
     nints = []
 
+    # Open science images
     for s in science_list:
 
         f = fits.open(s,memmap=False)
@@ -440,23 +458,12 @@ def locate_and_correct_cosmic(meta):
         data = np.vstack(data)
     else:
         data = np.array(data)
-
-    # Load bad pixel mask if provided
-    if badpixel:
-
-        # Read h5 xarray
-        bpm = xr.open_dataset(badpixellist, engine="h5netcdf")
-
-        # Convert xarray to numpy array
-        mask = bpm[list(bpm.data_vars)[0]].values
-
-        # Mask the data
-        data[:,mask] = np.nan
     
     # Definitons
     # ----------------------------------------
 
-    # Define the cosmic pixel flagged array, initially as an array of zeros matching the dimensions of the input data
+    # Define the cosmic pixel flagged array, initially as an array of zeros matching 
+    # the dimensions of the input data
     cosmic_pixels = np.zeros_like(data)
     nframes, nrows, ncols = data.shape
 
@@ -466,29 +473,18 @@ def locate_and_correct_cosmic(meta):
     # Make an array of pixel_clip
     cut_off_arr = np.full(nframes, cut_off, dtype=float)
 
-    # print(cut_off_arr)
-
-    # If n_group > 1, then we will ask which frames and which sigma values to use
-    # if args.n_group > 1:
-
-    #     for m in range(args.n_group -1):
-
-    #         # Ask for sigma clip
-    #         cut_val = float(input("Enter sigma value: "))
-    #         frame_list = input("Enter frames number separated by space: ")
-    #         frame_list = list(map(int, frame_list.split()))
-    #         frame_list = np.array(frame_list) - 1  # Convert to zero-based index
-
-    #         cut_off_arr[frame_list] = cut_val
+    # If different frames can have different pixel clip values
+    if groups:
+        try:
+            cut_off_arr = assign_group_array(grouplist, cut_off_arr)
+        except:
+            print("There is no group list")
 
     # Find unique values in sigma / cut_off
     sigmas = np.unique(cut_off_arr)
 
     # Join them the unique sigmas to be a string
     sigma_name = "_".join([str(s) for s in sigmas])
-
-    # Make directory for different sigma 
-
 
     # Set up working directory
     # -----------------------------------------
@@ -500,10 +496,14 @@ def locate_and_correct_cosmic(meta):
     gif_output = os.path.join(plot_output, "cosmic_frames")
     cleaned_dir = os.path.join(sigma_dir, 'cleaned_images')
 
-    # Make the directory
+    # If the folder for a certain sigma hasn't been created then
+    # the user shall not clean the images. This is to make sure
+    # clenaed images are generated after inspecting the entire
+    # plots of the cosmic rays
     if not os.path.exists(cosmic_dir):
         cleaned = False 
     
+    # Make the directories
     os.makedirs(cosmic_dir, exist_ok=True)
     os.makedirs(sigma_dir, exist_ok=True)
     os.makedirs(plot_output, exist_ok=True)
@@ -536,17 +536,13 @@ def locate_and_correct_cosmic(meta):
     # Change the cosmic pixels array to boolean type
     cosmic_pixels = cosmic_pixels.astype(bool)
 
-    # When there is possibility of negative median values
-    # if args.bias_frame is not None:
-
+    # Here I enforece the usage of bias, hence negative values check
     # Negative median pixels for cosmic pixels
     neg_cosmic_map = cosmic_pixels & (median_values < 0)
-    # plot_neg_cosmic_map = np.where(neg_cosmic_map, 1, 0)
 
     # Negative median in general
     all_array = np.full_like(median_values, True, dtype=bool)
     neg_med_map = all_array & (median_values < 0)
-    # plot_neg_med_map = np.where(neg_med_map, 1, 0) 
 
     # Change median values that is negative to zero
     median_values[median_values < 0] = 0
@@ -564,15 +560,15 @@ def locate_and_correct_cosmic(meta):
 
     # Save the cosmic masks
     name_file = f'cosmic_pixel_mask_sigma{sigma_name}'
-    save_to_xarray(cosmic_pixels, sigma_dir, name_file, sigma_name, bias_path)
+    save_to_xarray(cosmic_pixels, sigma_dir, name_file, sigma_name, bias_path, meta)
     
     # For possibility of negative median values
     print("\nBecause bias is provided, plotting pixels with negative median values...\n")
     locate_zeroes(nframes, neg_cosmic_map, neg_med_map, plot_output, showfig, savefig)
 
     # Save cosmic masks where the median values were supposed to be negative
-    name_file = f'where_negative_median_is_sigma_{sigma_name}'
-    save_to_xarray(neg_cosmic_map, sigma_dir, name_file, sigma_name, bias_path)
+    name_file = f'negative_cosmic_ray_sigma_{sigma_name}'
+    save_to_xarray(neg_cosmic_map, sigma_dir, name_file, sigma_name, bias_path, meta)
 
     # optionally save new fits files with cosmics replaced by median pixel values
     # note: this doesn't offer much improvement over the interpolation performed in long_slit_science_extraction.py
@@ -601,14 +597,16 @@ if __name__ == "__main__":
     meta.attrs['locate_cosmics_pixelclip'] = 7
     meta.attrs['locate_cosmics_frameclip'] = 10
 
-    meta.attrs['locate_cosmics_showfig'] = True
+    meta.attrs['locate_cosmics_showfig'] = False
     meta.attrs['locate_cosmics_savefig'] = True
     meta.attrs['locate_cosmics_overwrite'] = True 
 
     meta.attrs['locate_cosmics_badpixelmask'] = True 
     meta.attrs['bad_pixel_mask'] = 'bad_pixel_mask_loose.h5'
 
-    meta.attrs['locate_cosmics_groups'] = False 
+    meta.attrs['locate_cosmics_groups'] = True
+    meta.attrs['locate_cosmics_groupspath'] = 'cosmic_ray_group.txt'
+
     meta.attrs['locate_cosmics_gifs'] = True 
 
     # Hardcode, if no cosmic ray folder, then this has to be false
