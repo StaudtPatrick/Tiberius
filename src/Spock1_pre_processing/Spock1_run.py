@@ -285,7 +285,7 @@ def run_bias(
     # Find the run with same hashes if existing
     existing = find_existing_run(registry_dir, borg.meta.product_id.config_hash, borg.meta.product_id.input_hash)
     if existing and not overwrite:
-        logger.info(f"Skipped: Master Bias already exists -> {existing}", extra={"data_name", "bias"})
+        logger.info(f"Skipped: Master Bias already exists -> {existing}", extra={"data_name": "bias"})
         return registry_dir / existing
     elif existing and overwrite:
         run_id = existing
@@ -407,8 +407,8 @@ def run_flats(
     # Find the run with same hashes if existing
     existing = find_existing_run(registry_dir, borg.meta.product_id.config_hash, borg.meta.product_id.input_hash)
     if existing and not overwrite:
-        logger.info(f"Skipped: Master Flat already exists -> {existing}", extra={"data_name", "flats"})
-        return registry_dir / existing
+        logger.info(f"Skipped: Master Flat already exists -> {existing}", extra={"data_name": "flats"})
+        return registry_dir / existing, extensions
     elif existing and overwrite:
         run_id = existing
     else: 

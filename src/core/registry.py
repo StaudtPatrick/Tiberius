@@ -21,7 +21,7 @@ def update_registry(spock_root: Union[str, Path]) -> None:
     -------
     None
     """
-    stage_root = Path(stage_root)
+    spock_root = Path(spock_root)
 
     rows = []
 

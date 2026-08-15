@@ -196,7 +196,7 @@ def run_median_smooth(
     # Find the run with same hashes if existing
     existing = find_existing_run(registry_dir, borg.meta.product_id.config_hash, borg.meta.product_id.input_hash)
     if existing and not overwrite:
-        logger.info(f"Skipped: Median_Smooth already exists -> {existing}", extra={"data_name", "flats"})
+        logger.info(f"Skipped: Median_Smooth already exists -> {existing}", extra={"data_name": "flats"})
         return registry_dir / existing
     elif existing and overwrite:
         run_id = existing
@@ -263,7 +263,7 @@ def run_gaussian_smooth(
     # Find the run with same hashes if existing
     existing = find_existing_run(registry_dir, borg.meta.product_id.config_hash, borg.meta.product_id.input_hash)
     if existing and not overwrite:
-        logger.info(f"Skipped: Gaussian_Smooth already exists -> {existing}", extra={"data_name", "flats"})
+        logger.info(f"Skipped: Gaussian_Smooth already exists -> {existing}", extra={"data_name": "flats"})
         return registry_dir / existing
     elif existing and overwrite:
         run_id = existing
